@@ -1,5 +1,5 @@
 import {
-  GET_USER_DATA,
+  GET_SIGN_UP_DATA,
   GET_USER_DATA_SUCCESS,
   GET_USER_DATA_FAIL,
   GET_CURRENT_LOCACTION,
@@ -9,9 +9,16 @@ import { AsyncStorage } from 'react-native';
 
 var id;
 
+export function getSignUpData(data){
+	return{
+		type: GET_SIGN_UP_DATA,
+		data
+	}
+}
+
+
 export function getUserData(){
 	return (dispatch)=>{
-		dispatch(getData());
 		AsyncStorage.getItem('user', (error, data)=>{
 			if(error){
 				dispatch(getUserDatafail(error));
@@ -24,11 +31,6 @@ export function getUserData(){
 	}
 }
 
-function getData(){
-	return {
-		type: GET_USER_DATA
-	}
-}
 
 function getUserDatasucces(data){
 	return{

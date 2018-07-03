@@ -1,50 +1,65 @@
 
 // import React from 'react';
 import React, {Component} from 'react';
-import {
-  Platform,
-  StyleSheet,
-  Text,
-  View,
-  Button,
-  Alert,
-  AsyncStorage
-} from 'react-native';
-
+import {Platform, StyleSheet, Alert, AsyncStorage, PermissionsAndroid} from 'react-native';
+import { Container, Header, Title, Content, Footer, FooterTab, Button, Left, Right, Body, Icon, Text } from 'native-base';
 import {connect} from 'react-redux'
 import { getUserData, getCurrentLocation } from '../Actions/actions';
 import { NavigationActions } from "react-navigation";
 //import { getCurrentLocation } from '../Actions/actions';
 
-
-
 class Home extends Component {
   
+
+
+// async requestLocationPermission() {
+//     const chckLocationPermission = PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
+//     if (chckLocationPermission === PermissionsAndroid.RESULTS.GRANTED) {
+//         alert("You've access for the location");
+//     } else {
+//         try {
+//             const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+//                 {
+//                     'title': 'Cool Location App required Location permission',
+//                     'message': 'We required Location permission in order to get device location ' +
+//                         'Please grant us.'
+//                 }
+//             )
+//             if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+//                 alert("You've access for the location");
+//             } else {
+//                 alert("You don't have access for the location");
+//             }
+//         } catch (err) {
+//             alert(err)
+//         }
+//     }
+// };
+
+
+
 componentDidMount() {
     this.props.dispatch(getUserData());
-    //this.interval = setInterval(()=>{
-       this.props.dispatch(getCurrentLocation());
-    // }, 3000);
-    
-   // setTimeout(()=> {
-   //  this.sendLocation()
-   //  } , 3000);   
-    //console.log(Object.keys(this.props.region).length);
-      //console.log(this.props.region);     
+    this.props.dispatch(getCurrentLocation());
+    // this.requestLocationPermission();
+    setTimeout(()=> {
+     this.sendLocation()
+    } , 3000);   
 }
+
 
 static navigationOptions = {
     header:null
   }; 
 
 componentWillUnmount(){
-  //clearInterval(this.interval);
+  clearInterval(this.interval);
   this.logout();
 }
 
 UNSAFE_componentWillReceiveProps(nextProps){
   if(this.props.region && nextProps.region !== this.props.region){
-    console.log('next', nextProps.region);
+    // console.log('next', nextProps.region);
     this.sendLocation();
   }
 }
@@ -61,6 +76,7 @@ logout(){
 }
 
 sendLocation(){
+  console.log(this.props.userData);
  if(Object.keys(this.props.region).length > 0){
     console.log('sending location...');
     var region ={
@@ -68,8 +84,8 @@ sendLocation(){
       lng: this.props.region.region.coords.longitude,
       username: this.props.userData.data.username,
       age: this.props.userData.data.age,
-      gender: this.props.userData.data.gender
-
+      gender: this.props.userData.data.gender,
+      category: this.props.userData.data.category
     };
     console.log('data sent', region);
     fetch('http://210.19.254.111/Project/notification.php', {
@@ -117,19 +133,35 @@ sendLocation(){
 
 
   render() {
-    const { userData, region } = this.props;
-    //console.log('location', region);
+    const { userData}= this.props;
     return (
-      <View style={styles.container}>
-          <Text>welcome</Text>
-      </View>
+         <Container>
+                <Header>
+                  <Left>
+                    <Button transparent>
+                      <Icon name='menu' />
+                    </Button>
+                  </Left>
+                  <Body>
+                    <Title>Home</Title>
+                  </Body>
+                  <Right />
+                </Header>
+                <Content contentContainerStyle={styles.content}>
+                  <Text>Welcome {userData.data && userData.data.username}</Text>
+                </Content>
+                <Footer>
+                  <FooterTab>
+                  </FooterTab>
+                </Footer>
+              </Container>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  content:{
+    flex:1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',

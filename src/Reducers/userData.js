@@ -2,10 +2,6 @@ const initial = {}
 
 export default function getUserData(state = initial, action){
 	 switch(action.type) {
-      	case 'GET_USER_DATA':
-      	return {  
-      		...state
-        };
         case 'GET_USER_DATA_SUCCESS':
         return{
         	...state,

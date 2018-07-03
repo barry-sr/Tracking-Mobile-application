@@ -37,6 +37,7 @@ static navigationOptions = {
 
 navigate = () => {
     const navigateToSignUp = NavigationActions.navigate({
+      title:"signUp",
       routeName: "signUp"
     });
     this.props.navigation.dispatch(navigateToSignUp); 
@@ -152,6 +153,7 @@ navigate = () => {
                     })
                     .then((response) => response.json()) //JSON.stringify(response.json()))
                     .then((responseJson)=>{
+                      console.log('response',responseJson);
                       if(responseJson === "Username or Password is invalid") {
                        postSubmit(responseJson);
                       } else{
@@ -162,13 +164,13 @@ navigate = () => {
                                   }
                                   else{
                                     console.log('strore');
-                                  this.props.navigation.dispatch(NavigationActions.navigate({routeName: "home", params: responseJson}));
+                                  this.props.navigation.dispatch(NavigationActions.navigate({routeName: "home",}));
                                   }
                                 
                               });
                         
                       }
-                      console.log('response',responseJson);})
+                    })
                     .catch((error)=> { postSubmit(error); console.log('error',error)});
                         }
                       }}
@@ -201,7 +203,6 @@ const styles = StyleSheet.create({
     paddingRight: 10
   }
 });
-
 
 
 export default Login;

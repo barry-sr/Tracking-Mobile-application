@@ -1,5 +1,3 @@
-
-// import React from 'react';
 import React, {Component} from 'react';
 import {
   Platform,
@@ -19,14 +17,21 @@ import {
 
 import { NavigationActions } from "react-navigation";
 import { GiftedForm, GiftedFormModal, GiftedFormManager } from 'react-native-gifted-form'
-//import {connect} from 'react-redux'
-//import {getCurrentLocation} from './actions'
-
+import {connect} from 'react-redux'
+import { getSignUpData } from '../Actions/actions';
+import { bindActionCreators } from 'redux';
 
 class SignUp extends Component {
 
 static navigationOptions = {
-    title: 'SignUp'
+    title: 'SignUp',
+    headerStyle: {
+      backgroundColor: '#6200ee',
+    },
+    headerTintColor: '#fff',
+    headerTitleStyle: {
+      fontWeight: 'bold',
+    },
   };  
 
   
@@ -54,16 +59,11 @@ removeUserData(){
 navigate = () => {
     console.log('navigating');
     const redirectToLogin = NavigationActions.navigate({
-      title: null,
-      routeName: "login"
+      title: 'Profile',
+      routeName: "profile"
     });
     this.props.navigation.dispatch(redirectToLogin);
   };
-
-display(){
-
-console.log('hello');
-}
 
 
   setModalVisible(visible, params = null) {
@@ -266,38 +266,30 @@ console.log('hello');
             if (isValid === true) {
               // prepare object
               values.gender = values.gender[0];
-              console.log(values);
-              fetch('http://210.19.254.111/Project/deviceUsersReg.php', {
+              fetch('http://210.19.254.111/Project/deviceVerifyUserValidity.php', {
                 method: 'POST',
                 headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
                 },
 
-                body: JSON.stringify(values)
+                body: JSON.stringify({username: values.username})
               })
-              .then((response) => response.text()) //JSON.stringify(response.json()))
+              .then((response) => response.json())
               .then((responseJson)=> {
                  console.log(responseJson);
-                 if(responseJson === "Username exists!"){
-                    postSubmit(responseJson);
-                    //GiftedFormManager.reset('signupForm');
-                    setTimeout(()=>{
-                        //postSubmit(["you're being directed to login page"]);
-                        this.navigate();
-                    },1000);
-                 }
+                 if(responseJson === "valid username"){
+                     this.props.onSubmit({values});
+                      setTimeout(()=>{
+                          this.navigate();
+                      },1000);
+                 } 
                   else {
-                    postSubmit(responseJson);
-                    setTimeout(()=>{
-                        //postSubmit(["you're being directed to login page"]);
-                        this.navigate();
-                    },1000);
+                      postSubmit(responseJson);
                   }
               })
               .catch((error)=> {console.log(error)});
               
-
               /* Implement the request to your server using values variable
               ** then you can do:
               ** postSubmit(['An error occurred, please try again']); // disable the loader and display an error message
@@ -348,5 +340,14 @@ console.log('hello');
   }
 }
 
-export default SignUp
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        onSubmit: (data) => {
+            dispatch(getSignUpData(data))
+        }
+    }
+}
+
+export default connect(null, mapDispatchToProps)(SignUp)
 
